@@ -38,30 +38,3 @@ ax.grid()
 #ax.axis((0, 4000, 0, 130))
 plt.show()
 """
-
-rate, original_data = wavfile.read("/Users/enrique/projects/guitar_dataset/c16.wav")
-
-data = original_data[:,0]
-
-filter_win_size = 2000
-
-max_data = maximum_filter(data, filter_win_size)
-
-peak_mask = np.logical_not(max_data < 1000)
-conv_mask = [-1, 2, -1]
-peak_mask = np.convolve(peak_mask, conv_mask)
-
-# pairs of [begin, end]
-max_places = np.where(peak_mask > 0)[0]
-
-#fig, ax = plt.subplots()
-#r = range(data.shape[0])
-#ax.plot(r, data, 'k')
-#ax.plot(max_places, data[max_places], 'xr')
-#ax.grid()
-#plt.show()
-
-for i in range( 0, int(len(max_places)/2 ) ):
-    start = max_places[2*i]
-    end = max_places[2*i+1]
-    wavfile.write("c_"+str(i)+".wav", 44100, original_data[start:end,:])
