@@ -3,6 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft
 
+def plotSound(data):
+    time = (1/44100)*len(data)
+    xf = np.linspace( 0.0, time, len(data) )
+    plt.plot(xf, data)
+    plt.grid()
+    plt.show()
+
 def plotFourier(data):
     N = len(data)
     T = 1.0 / 44100
