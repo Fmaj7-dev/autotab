@@ -1,16 +1,16 @@
 
 from scipy.io import wavfile
-from plot import plotFourier, plotSound
+from plot import plotFourier, plotSound, plotConstantQ
 import sys
+import os
 
 
 def analysis(file):
     rate, data = wavfile.read( file )
-    # res = A_weighting(data[1000][0])
-    # print(res)
-
-    plotFourier(data)
-    plotSound(data)
+    filename = os.path.splitext(file)[0] + ".png"
+    #plotFourier(filename, data )
+    #plotSound(data)
+    plotConstantQ(file)
 
 def showHelp():
     print("Usage:")
