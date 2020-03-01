@@ -41,21 +41,23 @@ def plotFourier(name, *datas):
     plt.show()
     
 def plotConstantQ(file):
-    print ("Q")
-    rate, data = wavfile.read( file )
-    print( len(data[:,0]) )
+    print ("constant Q")
+    
+    rate, data = wavfile.read( file ) #pylint: disable=unused-variable
+    print( "samples: " + str(len(data[:,0]) ) )
 
-    C = np.abs(librosa.cqt(data[:,0] / float(65535), sr=44100))
-    print( C.shape )
-    #print(C[:,200])
+    C = np.abs(librosa.cqt(data[:,0] / float(65535), sr=44100, norm=0, filter_scale=3))
+    print("Shape: "+ str(C.shape ) )
 
-    line1 = C[:,200]
-    line2 = C[:,300]
-    plt.plot(line1)
-    plt.plot(line2)
-    plt.show()
+    plt.title(file)
 
+    # add all samples
     result = np.sum(C, axis=1)
+
+    # normalize
+    amax = np.amax(result)
+    result = result/amax
+
     plt.plot(result)
     plt.show()
 

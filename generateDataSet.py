@@ -8,7 +8,8 @@ from numpy import convolve
 import os
 import sys
 
-
+# performs a temporal segmentation and split one file with many notes
+# in several ones into a folder.
 def generateDataSet(inputFile, outputFolder):
     # get name & extension
     filename = os.path.basename(inputFile)
@@ -18,6 +19,9 @@ def generateDataSet(inputFile, outputFolder):
 
     data = original_data[:,0]
 
+    # 44100 samples per second
+    # D2 is 73hz
+    # win size must be > 44100/73=604
     max_filter_win_size = 2000
 
     # max filter
