@@ -5,7 +5,6 @@ import sys
 import os
 import dataset
 
-
 def analysis(file):
     rate, data = wavfile.read( file )
     filename = os.path.splitext(file)[0] + ".png"
@@ -29,3 +28,10 @@ else:
     elif sys.argv[1] == "process_dataset":
         d = dataset.DataSet()
         d.createFromAudioFiles( sys.argv[2] )
+        #print(d)
+        d.save("database.db")
+        ### another
+        d2 = dataset.DataSet()
+        d2.load("database.db")
+        #print(d2)
+        

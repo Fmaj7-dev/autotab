@@ -1,13 +1,40 @@
 import librosa
 import numpy as np
 import os
+import time
 
 from scipy.io import wavfile
 
+# Represents a simple sample of music
+class Sample:
+    def __init__(self, note_index, spectrum_values):
+        self.note_index = note_index
+        self.spectrum_values = spectrum_values
+    
+    def __str__(self):
+        return "index: " + str(self.note_index) + " \nvalue: " + str(self.spectrum_values)
+
+    def getNoteIndex(self):
+        return self.note_index
+    
+    def getSpectrumValues(self):
+        return self.spectrum_values
+
+# Dataset of wav files (we only store the CQT array that represents the sound)
+# It can be processed from wav files, or read from a file if previously processed
 class DataSet:
     def __init__(self):
-        self.training_samples = []
+        self.samples = []
 
+    def __str__(self):
+        ret = str(len(self.samples)) + " samples loaded\n" 
+        if len(self.samples) > 0:
+            #print (self.samples[0])
+            ret =  ret + self.samples[0].__str__()
+
+        return ret
+
+    # each musical note has a name and a order, being C0 the first one.
     def getNoteOrder(self, file):
         note = file.split("_")[0]
         octave = int(note[-1])
@@ -41,7 +68,10 @@ class DataSet:
 
         return octave*12 + offset
 
+    # create a database of samples based on wav files
     def createFromAudioFiles(self, folder):
+        start_time = time.time()
+
         for file in os.listdir(folder):
             print("processing " + file)
 
@@ -64,8 +94,45 @@ class DataSet:
             amax = np.amax(result)
             result = result/amax
 
-    def save(self, path):
+            s = Sample(note_order, result)
+            self.samples.append(s)
+
+        total_time = time.time() - start_time
+        print("processing time: " + str(total_time))
+
+    # save ascii array of samples
+    def save( self, file_name ):
+        File = open( file_name, "w" )
+        
+        # write number of samples
+        File.write(str(len(self.samples)))
+        File.write("\n")
+
+        # for each sample write classification and array 
+        for sample in self.samples:
+            File.write( str(sample.getNoteIndex()) +"\n" )
+            sample.getSpectrumValues().tofile(File, " ")
+            File.write( "\n" )
+        File.close()
         pass
 
-    def load(self, path):
-        pass
+    # load ascii array of samples
+    def load(self, file_name):
+        start_time = time.time()
+        File = open( file_name, "r" )
+        num_samples = int(File.readline())
+
+        # read all samples
+        for i in range(0, num_samples):
+            index = int(File.readline())
+            array = File.readline()
+            spectrum = np.fromstring(array, sep=' ')
+            new_sample = Sample(index, spectrum)
+
+            # into the array of samples
+            self.samples.append(new_sample)
+
+        File.close()
+        total_time = time.time() - start_time
+        print("loading time: " + str(total_time))
+        
