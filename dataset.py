@@ -129,7 +129,7 @@ class DataSet:
         num_samples = int(File.readline())
 
         # read all samples
-        for i in range(0, num_samples):
+        for i in range(0, num_samples): #pylint: disable=unused-variable
             index = int(File.readline())
             array = File.readline()
             spectrum = np.fromstring(array, sep=' ')
@@ -139,6 +139,6 @@ class DataSet:
             self.samples.append(new_sample)
 
         File.close()
-        total_time = time.time() - start_time
+        total_time = time.time() - start_time #pylint: disable=unused-variable
         #print("loading time: " + str(total_time))
         

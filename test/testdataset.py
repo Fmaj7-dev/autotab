@@ -25,4 +25,4 @@ class TestDataset(unittest.TestCase):
 suite = unittest.TestLoader().loadTestsFromTestCase(TestDataset)
 unittest.TextTestRunner(verbosity=2).run(suite)
 
-
+os.remove("database.db")

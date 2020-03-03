@@ -39,7 +39,7 @@ def generateDataSet(inputFile, outputFolder):
     max_places = np.where(peak_mask > 0)[0]
 
     # optionally plot it
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots() #pylint: disable=unused-variable
     r = range(data.shape[0])
     ax.plot(r, data, 'k')
     ax.plot(max_places, data[max_places], 'xr')

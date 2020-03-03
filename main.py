@@ -6,8 +6,8 @@ import os
 import dataset
 
 def analysis(file):
-    rate, data = wavfile.read( file )
-    filename = os.path.splitext(file)[0] + ".png"
+    rate, data = wavfile.read( file ) #pylint: disable=unused-variable
+    filename = os.path.splitext(file)[0] + ".png" #pylint: disable=unused-variable
     #plotFourier(filename, data )
     #plotSound(data)
     plotConstantQ(file)
