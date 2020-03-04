@@ -4,6 +4,7 @@ from plot import plotFourier, plotSound, plotConstantQ
 import sys
 import os
 import dataset
+import classifier
 
 def analysis(file):
     rate, data = wavfile.read( file ) #pylint: disable=unused-variable
@@ -15,7 +16,10 @@ def analysis(file):
 def showHelp():
     print("Usage:")
     print("")
-    print("generateDataSet.py /home/alice/media/c1.wav /home/alice/dataset")
+    print("python main.py analysis <wav file>")
+    print("python main.py generate_dataset")
+    print("python main.py process_dataset <path to directory with wav files>")
+    print("python main.py train")
 
 
 # option parameter not given
@@ -43,4 +47,12 @@ elif sys.argv[1] == "process_dataset":
     d2 = dataset.DataSet()
     d2.load("database.db")
     #print(d2)
-    
+elif sys.argv[1] == "train":
+    d = dataset.DataSet()
+    d.load("database.db")
+    d.prepareForTraining()
+
+    c = classifier.Classifier()
+    c.trainET(d)
+    c.classifyET(d)
+

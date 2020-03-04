@@ -2,40 +2,48 @@ import librosa
 import numpy as np
 import os
 import time
+import random
 
 from scipy.io import wavfile
+from sklearn.utils import shuffle
 
 # Represents a simple sample of music
-class Sample:
-    def __init__(self, note_index, spectrum_values):
-        self.note_index = note_index
-        self.spectrum_values = spectrum_values
-    
-    def __str__(self):
-        return "index: " + str(self.note_index) + " \nvalue: " + str(self.spectrum_values)
-
-    def getNoteIndex(self):
-        return self.note_index
-    
-    def getSpectrumValues(self):
-        return self.spectrum_values
+#class Sample:
+#    def __init__(self, note_index, spectrum_values):
+#        self.note_index = note_index
+#        self.spectrum_values = spectrum_values
+#    
+#    def __str__(self):
+#        return "index: " + str(self.note_index) + " \nvalue: " + str(self.spectrum_values)
+#
+#    def getNoteIndex(self):
+#        return self.note_index
+#    
+#    def getSpectrumValues(self):
+#        return self.spectrum_values
 
 # Dataset of wav files (we only store the CQT array that represents the sound)
 # It can be processed from wav files, or read from a file if previously processed
 class DataSet:
     def __init__(self):
-        self.samples = []
+        self.x_samples = []
+        self.y_samples = []
+
+        self.x_train = []
+        self.y_train = []
+        self.x_test = []
+        self.y_test = []
 
     def __str__(self):
-        ret = str(len(self.samples)) + " samples loaded\n" 
-        if len(self.samples) > 0:
+        ret = str(len(self.x_samples)) + " samples loaded\n" 
+        if len(self.x_samples) > 0:
             #print (self.samples[0])
-            ret =  ret + self.samples[0].__str__()
+            ret =  ret + self.x_samples[0].__str__()
 
         return ret
 
     def getNumSamples(self):
-        return len(self.samples)
+        return len(self.x_samples)
 
     # each musical note has a name and a order, being C0 the first one.
     def getNoteOrder(self, file):
@@ -99,8 +107,9 @@ class DataSet:
             amax = np.amax(result)
             result = result/amax
 
-            s = Sample(note_order, result)
-            self.samples.append(s)
+            #s = Sample(note_order, result)
+            self.x_samples.append(result)
+            self.y_samples.append(note_order)
 
         total_time = time.time() - start_time
         if verbose:
@@ -111,13 +120,14 @@ class DataSet:
         File = open( file_name, "w" )
         
         # write number of samples
-        File.write(str(len(self.samples)))
+        File.write(str(len(self.x_samples)))
         File.write("\n")
 
         # for each sample write classification and array 
-        for sample in self.samples:
-            File.write( str(sample.getNoteIndex()) +"\n" )
-            sample.getSpectrumValues().tofile(File, " ")
+        for i in range(0, len(self.x_samples)):
+            File.write( str(self.y_samples[i]) +"\n" )
+            #sample.getSpectrumValues().tofile(File, " ")
+            self.x_samples[i].tofile(File, " ")
             File.write( "\n" )
         File.close()
         pass
@@ -133,12 +143,33 @@ class DataSet:
             index = int(File.readline())
             array = File.readline()
             spectrum = np.fromstring(array, sep=' ')
-            new_sample = Sample(index, spectrum)
+            #new_sample = Sample(index, spectrum)
+            self.x_samples.append(spectrum)
+            self.y_samples.append(index)
 
             # into the array of samples
-            self.samples.append(new_sample)
+            #self.samples.append(new_sample)
 
         File.close()
         total_time = time.time() - start_time #pylint: disable=unused-variable
         #print("loading time: " + str(total_time))
+
+    def prepareForTraining(self):
+        # randomize
+        #random.shuffle(self.samples)
+        (self.x_samples, self.y_samples) = shuffle(self.x_samples, self.y_samples)
+
+        # move a percentage of original
+        percentage = 20/100
+
+        training_size = int(len(self.x_samples ) * percentage)
+
+        self.x_test = self.x_samples[:training_size]
+        self.x_train = self.x_samples[training_size:]
+
+        self.y_test = self.y_samples[:training_size]
+        self.y_train = self.y_samples[training_size:]
+
+        # empty samples
+        #self.samples = []
         
