@@ -24,7 +24,6 @@ class DataSet:
     def __str__(self):
         ret = str(len(self.x_samples)) + " samples loaded\n" 
         if len(self.x_samples) > 0:
-            #print (self.samples[0])
             ret =  ret + self.x_samples[0].__str__()
 
         return ret
@@ -76,6 +75,10 @@ class DataSet:
 
     # save ascii array of samples
     def save( self, file_name ):
+        #np.savez("x_samples.npz", x=self.x_samples)
+        #np.savez("y_samples.npz", y=self.y_samples)
+        #return
+
         File = open( file_name, "w" )
         
         # write number of samples
@@ -92,6 +95,14 @@ class DataSet:
 
     # load ascii array of samples
     def load(self, file_name):
+        #x = np.load("x_samples.npz")
+        #y = np.load("y_samples.npz")
+
+        #self.x_data = x['x']
+        #self.y_data = y['y']
+        #print(self.x_samples)
+        #return 
+
         start_time = time.time()
         File = open( file_name, "r" )
         num_samples = int(File.readline())
@@ -105,19 +116,15 @@ class DataSet:
             self.x_samples.append(spectrum)
             self.y_samples.append(index)
 
-            # into the array of samples
-            #self.samples.append(new_sample)
-
         File.close()
         total_time = time.time() - start_time #pylint: disable=unused-variable
         #print("loading time: " + str(total_time))
 
     def prepareForTraining(self):
         # randomize
-        #random.shuffle(self.samples)
         (self.x_samples, self.y_samples) = shuffle(self.x_samples, self.y_samples)
 
-        # move a percentage of original
+        # move a percentage of original to test
         percentage = 20/100
 
         training_size = int(len(self.x_samples ) * percentage)
@@ -128,6 +135,6 @@ class DataSet:
         self.y_test = self.y_samples[:training_size]
         self.y_train = self.y_samples[training_size:]
 
-        # empty samples
-        #self.samples = []
+        # samples still have the data
+        
         

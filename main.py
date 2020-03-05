@@ -43,10 +43,6 @@ elif sys.argv[1] == "process_dataset":
     d.createFromAudioFiles( sys.argv[2], verbose = True )
     #print(d)
     d.save("database.db")
-    ### another
-    d2 = dataset.DataSet()
-    d2.load("database.db")
-    #print(d2)
 elif sys.argv[1] == "train":
     d = dataset.DataSet()
     d.load("database.db")

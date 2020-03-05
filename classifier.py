@@ -78,8 +78,9 @@ class Classifier:
         print("num tests: " + str(num_guess + num_fails))
         print("success rate: "+str(success_rate*100) + "%")
 
-    #FIXME: move this to a common audio reader
+    
     def classifyET(self, wavfilename):
+        #FIXME: move this to a common audio reader
         rate, data = wavfile.read( wavfilename ) #pylint: disable=unused-variable
         C = np.abs( librosa.cqt(data[:,0] / float(65535), sr=44100, norm=0, filter_scale=3) )
 
@@ -96,7 +97,7 @@ class Classifier:
         # find the maximum correlation
         for note_name, spectrum in self.valuesET.items():
             corr = np.corrcoef(result, spectrum)
-            #print("correlation between"+str(guess_note_name) + " and " + str(note_name) + " = " + str(corr[0][1] ))
+            print("correlation " + str(noteutils.num2note(note_name)) + " = " + str(corr[0][1] ))
             if corr[0][1] > max_corr:
                 max_corr = corr[0][1]
                 max_corr_note = note_name
