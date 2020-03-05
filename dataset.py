@@ -7,20 +7,7 @@ import random
 from scipy.io import wavfile
 from sklearn.utils import shuffle
 
-# Represents a simple sample of music
-#class Sample:
-#    def __init__(self, note_index, spectrum_values):
-#        self.note_index = note_index
-#        self.spectrum_values = spectrum_values
-#    
-#    def __str__(self):
-#        return "index: " + str(self.note_index) + " \nvalue: " + str(self.spectrum_values)
-#
-#    def getNoteIndex(self):
-#        return self.note_index
-#    
-#    def getSpectrumValues(self):
-#        return self.spectrum_values
+import noteutils
 
 # Dataset of wav files (we only store the CQT array that represents the sound)
 # It can be processed from wav files, or read from a file if previously processed
@@ -48,36 +35,8 @@ class DataSet:
     # each musical note has a name and a order, being C0 the first one.
     def getNoteOrder(self, file):
         note = file.split("_")[0]
-        octave = int(note[-1])
-        note_name = note[:-1]
-        offset = 0
 
-        if note_name == "c":
-            offset = 0
-        elif note_name == "cs":
-            offset = 1
-        elif note_name == "d":
-            offset = 2
-        elif note_name == "ds":
-            offset = 3
-        elif note_name == "e":
-            offset = 4
-        elif note_name == "f":
-            offset = 5
-        elif note_name == "fs":
-            offset = 6
-        elif note_name == "g":
-            offset = 7
-        elif note_name == "gs":
-            offset = 8
-        elif note_name == "a":
-            offset = 9
-        elif note_name == "as":
-            offset = 10
-        elif note_name == "b":
-            offset = 11
-
-        return octave*12 + offset
+        return noteutils.note2num(note)
 
     # create a database of samples based on wav files
     def createFromAudioFiles(self, folder, verbose=False):
@@ -130,7 +89,6 @@ class DataSet:
             self.x_samples[i].tofile(File, " ")
             File.write( "\n" )
         File.close()
-        pass
 
     # load ascii array of samples
     def load(self, file_name):

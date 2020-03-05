@@ -54,5 +54,10 @@ elif sys.argv[1] == "train":
 
     c = classifier.Classifier()
     c.trainET(d)
-    c.classifyET(d)
+    c.testET(d)
+    c.save("classif.db")
+elif sys.argv[1] == "classify":
+    c = classifier.Classifier()
+    c.load("classif.db.npy")
+    c.classifyET(sys.argv[2])
 
