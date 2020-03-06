@@ -14,13 +14,77 @@ class Classifier:
 
     def trainNN(self, dataset):
         model = tf.keras.models.Sequential([
-        tf.keras.layers.Flatten(input_shape=(1, 84)),
+        #tf.keras.layers.Flatten(input_shape=(1, 84)),
         tf.keras.layers.Dense(128, activation='relu'),
         tf.keras.layers.Dropout(0.2),
         tf.keras.layers.Dense(10)
         ])
-    def classifyNN(self, x_value):
-        pass
+
+        loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+
+        model.compile(optimizer='adam',
+              loss=loss_fn,
+              metrics=['accuracy'])
+
+        # minimize loss
+        #print(dataset.x_train)
+        #print(dataset.y_train)
+        y_train = []
+        for y in dataset.y_train:
+            if y == 28:
+                y_train.append(0)
+            elif y == 31:
+                y_train.append(1)
+            elif y == 36:
+                y_train.append(2)
+            elif y == 41:
+                y_train.append(3)
+            elif y == 64:
+                y_train.append(4)
+
+
+        model.fit(np.array(dataset.x_train), np.array(y_train), epochs=10)
+
+        # evaluate loss
+        y_test = []
+        for y in dataset.y_test:
+            if y == 28:
+                y_test.append(0)
+            elif y == 31:
+                y_test.append(1)
+            elif y == 36:
+                y_test.append(2)
+            elif y == 41:
+                y_test.append(3)
+            elif y == 64:
+                y_test.append(4)
+
+        model.evaluate( np.array(dataset.x_test),  np.array(y_test), verbose=2)
+
+        tf.keras.models.save_model(model, "model")
+
+    def classifyNN(self, wavfilename):
+        #FIXME: move this to a common audio reader
+        rate, data = wavfile.read( wavfilename ) #pylint: disable=unused-variable
+        C = np.abs( librosa.cqt(data[:,0] / float(65535), sr=44100, norm=0, filter_scale=3) )
+
+        # add all samples
+        result = np.sum( C, axis=1 )
+
+        # normalize
+        amax = np.amax(result)
+        result = result/amax
+
+        r = []
+        r.append(result)
+        r.append(result)
+
+        model = tf.keras.models.load_model("model")
+
+        prediction = model.predict(np.array(r))
+        print(prediction)
+
+
 
     def trainET(self, dataset):
 

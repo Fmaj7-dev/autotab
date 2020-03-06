@@ -5,6 +5,7 @@ import sys
 import os
 import dataset
 import classifier
+import noteutils
 
 def analysis(file):
     rate, data = wavfile.read( file ) #pylint: disable=unused-variable
@@ -17,9 +18,17 @@ def showHelp():
     print("Usage:")
     print("")
     print("python main.py analysis <wav file>")
+    print("")
     print("python main.py generate_dataset")
+    print("")
     print("python main.py process_dataset <path to directory with wav files>")
+    print("    Creates a database with all the parameters from the audio files")
+    print("")
     print("python main.py train")
+    print("    Creates a database of the weights of the classificator")
+    print("")
+    print("python main.py classify <wav file>")
+    print("    Returns the class where the wav belongs")
 
 
 # option parameter not given
@@ -41,7 +50,6 @@ elif sys.argv[1] == "process_dataset":
 
     d = dataset.DataSet()
     d.createFromAudioFiles( sys.argv[2], verbose = True )
-    #print(d)
     d.save("database.db")
 elif sys.argv[1] == "train":
     d = dataset.DataSet()
@@ -56,4 +64,18 @@ elif sys.argv[1] == "classify":
     c = classifier.Classifier()
     c.load("classif.db.npy")
     c.classifyET(sys.argv[2])
+elif sys.argv[1] == "trainNN":
+    d = dataset.DataSet()
+    d.load("database.db")
+    d.prepareForTraining()
+
+    c = classifier.Classifier()
+    c.trainNN(d)
+elif sys.argv[1] == "classifyNN":
+    c = classifier.Classifier()
+    c.classifyNN(sys.argv[2])    
+elif sys.argv[1] == "notes":
+    noteutils.printNotes()
+else:
+    showHelp()
 
