@@ -6,6 +6,7 @@ import os
 import dataset
 import classifier
 import noteutils
+import generateDataSet
 
 def analysis(file):
     rate, data = wavfile.read( file ) #pylint: disable=unused-variable
@@ -19,7 +20,7 @@ def showHelp():
     print("")
     print("python main.py analysis <wav file>")
     print("")
-    print("python main.py generate_dataset")
+    print("python main.py generate_dataset <input folder> <output folder>")
     print("")
     print("python main.py process_dataset <path to directory with wav files>")
     print("    Creates a database with all the parameters from the audio files")
@@ -41,8 +42,13 @@ if sys.argv[1] == "analysis":
         showHelp()
         exit
     analysis(sys.argv[2])
+
 elif sys.argv[1] == "generate_dataset":
-    pass
+    if len(sys.argv) < 4:
+        showHelp()
+        exit
+    generateDataSet.generateDataSet(sys.argv[2], sys.argv[3])
+
 elif sys.argv[1] == "process_dataset":
     if len(sys.argv) <3:
         showHelp()
@@ -51,6 +57,7 @@ elif sys.argv[1] == "process_dataset":
     d = dataset.DataSet()
     d.createFromAudioFiles( sys.argv[2], verbose = True )
     d.save("database.db")
+
 elif sys.argv[1] == "train":
     d = dataset.DataSet()
     d.load("database.db")
@@ -60,10 +67,12 @@ elif sys.argv[1] == "train":
     c.trainET(d)
     c.testET(d)
     c.save("classif.db")
+
 elif sys.argv[1] == "classify":
     c = classifier.Classifier()
     c.load("classif.db.npy")
     c.classifyET(sys.argv[2])
+
 elif sys.argv[1] == "trainNN":
     d = dataset.DataSet()
     d.load("database.db")
@@ -71,9 +80,11 @@ elif sys.argv[1] == "trainNN":
 
     c = classifier.Classifier()
     c.trainNN(d)
+
 elif sys.argv[1] == "classifyNN":
     c = classifier.Classifier()
     c.classifyNN(sys.argv[2])    
+
 elif sys.argv[1] == "notes":
     noteutils.printNotes()
 else:

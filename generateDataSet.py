@@ -10,7 +10,7 @@ import sys
 
 # performs a temporal segmentation and split one file with many notes
 # in several ones into a folder.
-def generateDataSet(inputFile, outputFolder):
+def splitFile(inputFile, outputFolder):
     # get name & extension
     filename = os.path.basename(inputFile)
     filename, fileextension = os.path.splitext(filename)
@@ -28,7 +28,7 @@ def generateDataSet(inputFile, outputFolder):
     max_data = maximum_filter(data, max_filter_win_size)
 
     # get zones with amplitude > min_amp
-    min_amp = 1000
+    min_amp = 500
     peak_mask = np.logical_not(max_data < min_amp)
 
     # apply a derivate to detect borders of zones
@@ -42,7 +42,7 @@ def generateDataSet(inputFile, outputFolder):
     fig, ax = plt.subplots() #pylint: disable=unused-variable
     r = range(data.shape[0])
     ax.plot(r, data, 'k')
-    ax.plot(max_places, data[max_places], 'xr')
+    ax.plot(max_places, data[max_places-1], 'xr')
     ax.grid()
     plt.show()
 
@@ -51,16 +51,12 @@ def generateDataSet(inputFile, outputFolder):
         start = max_places[2*i]
         end = max_places[2*i+1]
         wavfile.write(outputFolder + filename +"_"+ str(i) + fileextension, rate, original_data[start:end,:])
+        print("\t"+outputFolder + filename +"_"+ str(i) + fileextension)
 
 
-def showHelp():
-    print("Usage:")
-    print("")
-    print("generateDataSet.py /home/alice/media/c1.wav /home/alice/dataset")
+def generateDataSet(inputFolder, outputFolder):
+    for filename in os.listdir(inputFolder):
+        if filename.endswith(".wav"):
+            print("->Processing" + inputFolder + filename)
+            splitFile(inputFolder + filename, outputFolder)
 
-
-print (len(sys.argv))
-if len(sys.argv) <3:
-    showHelp()
-else:
-    generateDataSet(sys.argv[1], sys.argv[2])

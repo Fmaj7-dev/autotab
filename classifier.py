@@ -77,14 +77,11 @@ class Classifier:
 
         r = []
         r.append(result)
-        r.append(result)
 
         model = tf.keras.models.load_model("model")
 
         prediction = model.predict(np.array(r))
         print(prediction)
-
-
 
     def trainET(self, dataset):
 
