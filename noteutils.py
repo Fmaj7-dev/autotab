@@ -40,13 +40,15 @@ def num2note(num):
         name = "as"
     elif remaining == 11:
         name = "b"
+    else:
+        print("error, note not found "+num)    
 
     return name + str(octave)
 
 # given a note name (i.e. "e5"), it returns the order of such note
-def note2num(notename):
-    octave = int( notename[-1] )
-    note_name = notename[:-1]
+def note2num(note, octave):
+    #octave = int( notename[-1] )
+    note_name = note
     offset = 0
 
     if note_name == "c":
@@ -73,5 +75,7 @@ def note2num(notename):
         offset = 10
     elif note_name == "b":
         offset = 11
+    else:
+        print("error, note not found "+note_name)
 
-    return octave*12 + offset
+    return int(octave)*12 + offset

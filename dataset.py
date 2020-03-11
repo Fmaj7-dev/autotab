@@ -33,9 +33,10 @@ class DataSet:
 
     # each musical note has a name and a order, being C0 the first one.
     def getNoteOrder(self, file):
-        note = file.split("_")[0]
+        note = file.split("_")[1]
+        octave = file.split("_")[2]
 
-        return noteutils.note2num(note)
+        return noteutils.note2num(note, octave)
 
     # create a database of samples based on wav files
     def createFromAudioFiles(self, folder, verbose=False):
@@ -67,7 +68,7 @@ class DataSet:
 
             #s = Sample(note_order, result)
             self.x_samples.append(result)
-            self.y_samples.append(note_order)
+            self.y_samples.append(note_order -28)
 
         total_time = time.time() - start_time
         if verbose:

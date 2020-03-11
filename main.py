@@ -12,15 +12,16 @@ def analysis(file):
     rate, data = wavfile.read( file ) #pylint: disable=unused-variable
     filename = os.path.splitext(file)[0] + ".png" #pylint: disable=unused-variable
     #plotFourier(filename, data )
-    #plotSound(data)
+    plotSound(data)
     plotConstantQ(file)
 
 def showHelp():
-    print("Usage:")
+    print("Error! Usage:")
     print("")
     print("python main.py analysis <wav file>")
     print("")
     print("python main.py generate_dataset <input folder> <output folder>")
+    print("split files with notes into smaller files")
     print("")
     print("python main.py process_dataset <path to directory with wav files>")
     print("    Creates a database with all the parameters from the audio files")
@@ -28,14 +29,20 @@ def showHelp():
     print("python main.py train")
     print("    Creates a database of the weights of the classificator")
     print("")
+    print("python main.py trainNN")
+    print("    Trains a NN")    
+    print("")
     print("python main.py classify <wav file>")
     print("    Returns the class where the wav belongs")
+    print("")
+    print("python notes")
+
 
 
 # option parameter not given
 if len(sys.argv) <2:
     showHelp() 
-    exit
+    sys.exit()
 
 if sys.argv[1] == "analysis":
     if len(sys.argv) <3:
@@ -80,6 +87,8 @@ elif sys.argv[1] == "trainNN":
 
     c = classifier.Classifier()
     c.trainNN(d)
+
+    c.testNN(d)
 
 elif sys.argv[1] == "classifyNN":
     c = classifier.Classifier()

@@ -29,39 +29,44 @@ class Classifier:
         # minimize loss
         #print(dataset.x_train)
         #print(dataset.y_train)
-        y_train = []
-        for y in dataset.y_train:
-            if y == 28:
-                y_train.append(0)
-            elif y == 31:
-                y_train.append(1)
-            elif y == 36:
-                y_train.append(2)
-            elif y == 41:
-                y_train.append(3)
-            elif y == 64:
-                y_train.append(4)
 
-
-        model.fit(np.array(dataset.x_train), np.array(y_train), epochs=10)
+        model.fit(np.array(dataset.x_train), np.array(dataset.y_train), epochs=10)
 
         # evaluate loss
-        y_test = []
-        for y in dataset.y_test:
-            if y == 28:
-                y_test.append(0)
-            elif y == 31:
-                y_test.append(1)
-            elif y == 36:
-                y_test.append(2)
-            elif y == 41:
-                y_test.append(3)
-            elif y == 64:
-                y_test.append(4)
-
-        model.evaluate( np.array(dataset.x_test),  np.array(y_test), verbose=2)
+        model.evaluate( np.array(dataset.x_test),  np.array(dataset.y_test), verbose=2)
 
         tf.keras.models.save_model(model, "model")
+
+    def testNN(self, dataset):
+        num_guess = 0
+        num_fails = 0
+
+        model = tf.keras.models.load_model("model")
+
+        for i in range(0, len(dataset.x_test)):
+            # get known values
+            guess_spectrum = dataset.x_test[i]
+            guess_note_name = dataset.y_test[i]
+
+            r = []
+            r.append(guess_spectrum)
+
+            prediction = model.predict(np.array(r))
+            #note_name = prediction[0].index(max( prediction[0] ))
+            result = np.where(prediction[0] == np.amax(prediction[0]))
+            note_name = result[0]
+
+            if guess_note_name == note_name:
+                num_guess += 1
+            else:
+                num_fails += 1
+
+            print("guess note: "+str(guess_note_name))
+            print("classified as: "+str(note_name[0]))
+
+        success_rate = num_guess/(num_guess + num_fails)
+        print("num tests: " + str(num_guess + num_fails))
+        print("success rate: "+str(success_rate*100) + "%")
 
     def classifyNN(self, wavfilename):
         #FIXME: move this to a common audio reader
@@ -82,6 +87,7 @@ class Classifier:
 
         prediction = model.predict(np.array(r))
         print(prediction)
+        print(prediction.max())
 
     def trainET(self, dataset):
 
