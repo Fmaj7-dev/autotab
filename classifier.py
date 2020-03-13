@@ -11,13 +11,15 @@ import noteutils
 class Classifier:
     def __init__(self):
         self.valuesET = {}
+        # difference between the first note (C0) and the first classified note (E2)
+        self.OFFSET = 28
 
     def trainNN(self, dataset):
         model = tf.keras.models.Sequential([
         #tf.keras.layers.Flatten(input_shape=(1, 84)),
         tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dropout(0.2),
-        tf.keras.layers.Dense(10)
+        tf.keras.layers.Dropout(0.1),
+        tf.keras.layers.Dense(20)
         ])
 
         loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
@@ -27,8 +29,8 @@ class Classifier:
               metrics=['accuracy'])
 
         # minimize loss
-        #print(dataset.x_train)
-        #print(dataset.y_train)
+        # print(dataset.x_train)
+        # print(dataset.y_train)
 
         model.fit(np.array(dataset.x_train), np.array(dataset.y_train), epochs=10)
 
@@ -61,8 +63,8 @@ class Classifier:
             else:
                 num_fails += 1
 
-            print("guess note: "+str(guess_note_name))
-            print("classified as: "+str(note_name[0]))
+                print("failed guess note: "+str(guess_note_name))
+                print("classified as: "+str(note_name[0]))
 
         success_rate = num_guess/(num_guess + num_fails)
         print("num tests: " + str(num_guess + num_fails))
@@ -86,8 +88,14 @@ class Classifier:
         model = tf.keras.models.load_model("model")
 
         prediction = model.predict(np.array(r))
+
+        result = np.where(prediction[0] == np.amax(prediction[0]))
+        note_name = result[0]
+
         print(prediction)
-        print(prediction.max())
+        print()
+
+        print(wavfilename+" classified as: "+noteutils.num2note(note_name + self.OFFSET)+" "+str(prediction.max()))
 
     def trainET(self, dataset):
 
@@ -130,12 +138,13 @@ class Classifier:
                     max_corr = corr[0][1]
                     max_corr_note = note_name
 
-            print("guess note: "+str(guess_note_name))
-            print("classified as: "+str(max_corr_note)+" "+str(max_corr*100)+"%")
+            
             if guess_note_name == max_corr_note:
                 num_guess += 1
             else:
                 num_fails += 1
+                print("failed guess note: "+str(guess_note_name))
+                print("classified as: "+str(max_corr_note)+" "+str(max_corr*100)+"%")
 
             max_corr = -1
             max_corr_note = 0
@@ -164,9 +173,9 @@ class Classifier:
         # find the maximum correlation
         for note_name, spectrum in self.valuesET.items():
             corr = np.corrcoef(result, spectrum)
-            print("correlation " + str(noteutils.num2note(note_name)) + " = " + str(corr[0][1] ))
+            print("correlation " + str(noteutils.num2note(note_name + self.OFFSET)) + " = " + str(corr[0][1] ))
             if corr[0][1] > max_corr:
                 max_corr = corr[0][1]
                 max_corr_note = note_name
 
-        print(wavfilename+" classified as: "+noteutils.num2note(max_corr_note)+" "+str(max_corr*100)+"%")
+        print(wavfilename+" classified as: "+noteutils.num2note(max_corr_note + self.OFFSET)+" "+str(max_corr*100)+"%")

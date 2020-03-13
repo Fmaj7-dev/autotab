@@ -13,7 +13,7 @@ def analysis(file):
     filename = os.path.splitext(file)[0] + ".png" #pylint: disable=unused-variable
     #plotFourier(filename, data )
     plotSound(data)
-    plotConstantQ(file)
+    #plotConstantQ(file)
 
 def showHelp():
     print("Error! Usage:")
