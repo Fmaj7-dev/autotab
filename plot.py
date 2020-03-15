@@ -5,11 +5,24 @@ from scipy.fftpack import fft
 import librosa.display
 import librosa
 
+from scipy.ndimage.filters import maximum_filter
+
 from scipy.io import wavfile
+
+from scipy.ndimage import gaussian_filter1d
 
 def plotSound(data):
     time = (1/44100)*len(data)
     xf = np.linspace( 0.0, time, len(data) )
+    # test
+    data = data[:,0]
+
+    max_filter_win_size = 1000
+    data = maximum_filter(data, max_filter_win_size)
+    data = gaussian_filter1d(data, 1000)
+
+    data = abs(data)
+    #
     plt.plot(xf, data)
     plt.grid()
     plt.show()

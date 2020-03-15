@@ -8,11 +8,26 @@ from scipy.io import wavfile
 
 import noteutils
 
+from matplotlib import pyplot as plt
+import pandas as pd
+
 class Classifier:
     def __init__(self):
         self.valuesET = {}
         # difference between the first note (C0) and the first classified note (E2)
         self.OFFSET = 28
+
+    def plot_the_loss_curve(self, epochs, rmse):
+        """Plot the loss curve, which shows loss vs. epoch."""
+
+        plt.figure()
+        plt.xlabel("Epoch")
+        plt.ylabel("Root Mean Squared Error")
+
+        plt.plot(epochs, rmse, label="Loss")
+        plt.legend()
+        plt.ylim([rmse.min()*0.97, rmse.max()])
+        plt.show()
 
     def trainNN(self, dataset):
         model = tf.keras.models.Sequential([
@@ -28,11 +43,15 @@ class Classifier:
               loss=loss_fn,
               metrics=['accuracy'])
 
-        # minimize loss
-        # print(dataset.x_train)
-        # print(dataset.y_train)
+        history = model.fit(np.array(dataset.x_train), np.array(dataset.y_train), epochs=100)
 
-        model.fit(np.array(dataset.x_train), np.array(dataset.y_train), epochs=10)
+        plot = True
+
+        if plot:        
+            epochs = history.epoch
+            hist = pd.DataFrame( history.history )
+            rmse = hist["loss"]
+            self.plot_the_loss_curve(epochs, rmse)
 
         # evaluate loss
         model.evaluate( np.array(dataset.x_test),  np.array(dataset.y_test), verbose=2)
