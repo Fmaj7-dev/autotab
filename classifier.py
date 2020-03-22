@@ -16,6 +16,7 @@ class Classifier:
         self.valuesET = {}
         # difference between the first note (C0) and the first classified note (E2)
         self.OFFSET = 28
+        self.NUM_NOTES = 36
 
     def plot_the_loss_curve(self, epochs, rmse):
         """Plot the loss curve, which shows loss vs. epoch."""
@@ -34,7 +35,7 @@ class Classifier:
         #tf.keras.layers.Flatten(input_shape=(1, 84)),
         tf.keras.layers.Dense(128, activation='relu'),
         tf.keras.layers.Dropout(0.1),
-        tf.keras.layers.Dense(20)
+        tf.keras.layers.Dense(self.NUM_NOTES)
         ])
 
         loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
