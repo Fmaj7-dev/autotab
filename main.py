@@ -1,6 +1,7 @@
 
 from scipy.io import wavfile
 from plot import plotFourier, plotSound, plotConstantQ
+from song_analyzer import analyze
 import sys
 import os
 import dataset
@@ -96,6 +97,9 @@ elif sys.argv[1] == "classifyNN":
 
 elif sys.argv[1] == "notes":
     noteutils.printNotes()
+
+elif sys.argv[1] == "analyze":
+    analyze(sys.argv[2])
 else:
     showHelp()
 

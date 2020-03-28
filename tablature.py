@@ -1,5 +1,8 @@
 # Represents a in-memory tablature of a piece of music
 # Can be printed or stored in disk
+# E2 has a value of 0
+# F2 has a value of 1
+# Fs2 has a value of 2
 
 import noteutils
 
@@ -7,6 +10,9 @@ class Tablature:
     def __init__(self):
         self.strings = []
         pass
+
+    def addNote(self, note):
+        self.addNotes([note])
 
     def addNotes(self, notes):
         new_pulse = ['-', '-', '-', '-', '-', '-',]
@@ -26,10 +32,10 @@ class Tablature:
         pass
 
     def print(self):
-        for string in range(5, 0):
+        for string in range(0, 6):
             whole_str =""
             for step in self.strings:
-                whole_str += step[string]
+                whole_str += str(step[5-string])
             print(whole_str)
-            print("")
+            
 
