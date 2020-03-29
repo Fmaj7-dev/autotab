@@ -14,3 +14,6 @@ python main.py trainNN
 
 # example of running a test
 # python main.py classify ../guitar_dataset/dataset/test/e2_9.wav
+
+# analyze a song
+#python main.py analyze ../guitar_dataset/songs/chispa.wav

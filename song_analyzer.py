@@ -19,6 +19,7 @@ def analyze(inputFile):
     model = tf.keras.models.load_model("model")
 
     previous_note = 0
+    previous_time = 0
 
     tablature = Tablature()
 
@@ -46,12 +47,18 @@ def analyze(inputFile):
         result = np.where(prediction[0] == np.amax(prediction[0]))
         note_name = result[0]
 
+        cur_time = i*WINDOW_SIZE/rate
+
         if note_name != previous_note:
             previous_note = note_name
+            
             #print( noteutils.num2note(note_name + 28) )
             #print( i*WINDOW_SIZE/rate )
-            print(note_name)
+            
             tablature.addNotes( note_name )
+            if cur_time//3 != previous_time:
+                previous_time = cur_time//3
+                tablature.addTime(str(cur_time))
             tablature.print()
 
     

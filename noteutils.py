@@ -1,4 +1,9 @@
 
+class Note:
+    def __init__(self):
+        self.C = "c"
+        self.Cs = "cs"
+
 # based on https://pages.mtu.edu/~suits/notefreqs.html
 def printNotes():
     # c0 frequency
