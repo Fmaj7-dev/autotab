@@ -11,19 +11,21 @@ from scipy.io import wavfile
 
 from scipy.ndimage import gaussian_filter1d
 
-def plotSound(data):
-    time = (1/44100)*len(data)
-    xf = np.linspace( 0.0, time, len(data) )
-    # test
-    data = data[:,0]
+def plotSound(dataArr, freq=44100):
+    time = (1/freq) * len(dataArr[0])
+    xf = np.linspace( 0.0, time, len(dataArr[0]) )
+    
+    #if len(data.shape) > 1:
+    #    data = data[:,0]
 
-    max_filter_win_size = 1000
-    data = maximum_filter(data, max_filter_win_size)
-    data = gaussian_filter1d(data, 1000)
+    #max_filter_win_size = 1000
+    #data = maximum_filter(data, max_filter_win_size)
+    #data = gaussian_filter1d(data, 1000)
 
-    data = abs(data)
+    #data = abs(data)
     #
-    plt.plot(xf, data)
+    for data in dataArr:
+        plt.plot(xf, data)
     plt.grid()
     plt.show()
     

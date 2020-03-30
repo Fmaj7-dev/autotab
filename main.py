@@ -13,7 +13,7 @@ def analysis(file):
     rate, data = wavfile.read( file ) #pylint: disable=unused-variable
     filename = os.path.splitext(file)[0] + ".png" #pylint: disable=unused-variable
     #plotFourier(filename, data )
-    plotSound(data)
+    plotSound([data])
     #plotConstantQ(file)
 
 def showHelp():
@@ -45,7 +45,7 @@ if len(sys.argv) <2:
     showHelp() 
     sys.exit()
 
-if sys.argv[1] == "analysis":
+if sys.argv[1] == "plot":
     if len(sys.argv) <3:
         showHelp()
         exit

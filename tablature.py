@@ -26,11 +26,15 @@ class Tablature:
         new_pulse = ['-', '-', '-', '-', '-', '-']
 
         for note in notes:
+            print("adding "+str(note))
+            #if (note > 28):
+            #    continue
             if (note > 18):
                 note += 1
             string_number = note//5
             fret_number = note % 5
-
+            print("string_number: "+str(string_number))
+            
             new_pulse[string_number ] = fret_number
 
         self.strings.append( new_pulse )
@@ -42,7 +46,8 @@ class Tablature:
         self.time_marks.append(' ')
 
     def addTime(self, time_str):
-        self.strings.append( ['-', '-', '-', '-', '-', '-'] )
+        #self.strings.append( ['-', '-', '-', '-', '-', '-'] )
+        time_str = time_str + " "
         self.time_marks.append(time_str)
 
         for i in range(0, len(time_str)):
