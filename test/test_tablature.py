@@ -9,7 +9,7 @@ import tablature
 
 class TestTablature(unittest.TestCase):
 
-  def test_add(self):
+  def test_add_incorrect(self):
     t = tablature.Tablature()
     t.addNote(8)
     t.addNote(8)
@@ -26,11 +26,19 @@ class TestTablature(unittest.TestCase):
     t.addBar()
     t.addTime("2.4")
 
-    t.addNote(5)
+    t.addNote(25)
+    
+    self.assertEqual( t.getSize(), 0 )
+
+  def test_add_correct(self):
+    t = tablature.Tablature()
+    
+    for i in range(28, 68):
+      t.addNote(i)
 
     t.print()
 
-    self.assertEqual( 1, 1 )
+    self.assertEqual( t.getSize(), len(range(28, 68)) )
 
 #if __name__ == '__main__':
 suite = unittest.TestLoader().loadTestsFromTestCase(TestTablature)

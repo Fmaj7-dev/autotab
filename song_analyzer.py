@@ -105,34 +105,39 @@ def analyze(file):
     #max_positions = argrelextrema(y_total, np.greater)[0]
     max_positions, _ = find_peaks(y_total, distance=150, prominence=0.1)
 
-
-    # plot
-    time = (1/sr) * len(y_total)
-    xf = np.linspace( 0.0, time, len(y_total) )
-    plt.plot(xf, y_total)
-    plt.plot(max_positions/sr, y_total[max_positions], "x")
-    plt.show()
-
     # open file with wavfile 
-    # FIXME: check if we can reuse previous one
-    rate, original_data = wavfile.read( file )
-    data = original_data[:,0]
 
     previous_result = [0] * 84
 
     model = tf.keras.models.load_model("model")
     tablature = Tablature()
 
+    limits = np.zeros(y_total.shape[0])
+
     for pulse in range(0, len(max_positions)-1):
         time_from = max_positions[pulse]
         time_to = max_positions[pulse+1]
-        diff = time_to-time_from
 
-        C = np.abs( librosa.cqt(data[time_from : time_from + int(diff*0.5)] / float(65535), sr=sr, norm=0, filter_scale=3) )
+        diff = time_to-time_from
+        DIFF_PERCENTAGE = 0.8
+        C = np.abs( librosa.cqt(y[time_from : time_from + int(diff*DIFF_PERCENTAGE)] / float(65535), sr=sr, norm=0, filter_scale=3) )
+
+        from_print = (1/sr)*time_from
+        to_print = (1/sr)*(time_from + diff * DIFF_PERCENTAGE)
+
+        limits[int(from_print * sr)] = 1
+        limits[int(to_print * sr)] = 1
+
+        # get info
+        print("note "+str(pulse)+" from: "+str(from_print) + "s to: " + str(to_print) + "s")
+        wavfile.write("temp/" + str(pulse)+ ".wav", sr, y[ time_from: int(time_from + diff*DIFF_PERCENTAGE) ])
 
         # add all samples
         result = np.sum( C, axis=1 )
         
+        amax = np.amax(result)
+        result = result/amax
+
         new_result = result - previous_result
         previous_result = result
 
@@ -151,11 +156,21 @@ def analyze(file):
         new_result = np.where(prediction[0] == np.amax(prediction[0]))
         note_name = new_result[0]
   
-        tablature.addNotes( note_name )
+        tablature.addNotes( note_name +noteutils.NoteUtils.offsetGuitar )
         """if cur_time != previous_time:
             previous_time = cur_time//3
             tablature.addTime(str(cur_time))"""
-        tablature.print()
+
+    # plot
+    time = (1/sr) * len(y_total)
+    xf = np.linspace( 0.0, time, len(y_total) )
+    plt.plot(xf, y_total)
+    plt.plot(xf, limits)
+    plt.plot(xf, y)
+    plt.plot(max_positions/sr, y_total[max_positions], "x")
+    plt.show()
+
+    tablature.print()
 
     # Beat track on the percussive signal
 """     tempo, beat_frames = librosa.beat.beat_track(y=y_percussive,

@@ -12,12 +12,14 @@ class Tablature:
         self.time_marks = []
 
         self.title = "My Song"
-        pass
+
+        self.size = 0
 
     def setTitle(self, name):
         self.name = name
 
-    
+    def getSize(self):
+        return self.size
 
     def addNote(self, note):
         self.addNotes([note])
@@ -26,19 +28,37 @@ class Tablature:
         new_pulse = ['-', '-', '-', '-', '-', '-']
 
         for note in notes:
-            print("adding "+str(note))
-            #if (note > 28):
-            #    continue
-            if (note > 18):
-                note += 1
-            string_number = note//5
-            fret_number = note % 5
-            print("string_number: "+str(string_number))
+
+            # ignore notes out of guitar bonds
+            if note < 28:
+                #print("Note " + noteutils.num2note(note)+ " out of bonds, ignoring")
+                continue
+
+            #print("Adding "+noteutils.num2note(note))
             
-            new_pulse[string_number ] = fret_number
+            note_order = note - noteutils.NoteUtils.offsetGuitar
+
+            if (note_order > 18):
+                note_order += 1
+            string_number = note_order//5
+            fret_number = note_order % 5
+
+            while(string_number > 5):
+                string_number -= 1
+                fret_number += 5
+
+            #print("string_number: "+str(string_number))
+
+            if fret_number > 9:
+                new_pulse = ['--', '--', '--', '--', '--', '--']
+
+            new_pulse[ string_number ] = fret_number
+
+            self.size += 1
 
         self.strings.append( new_pulse )
         self.strings.append( ['-', '-', '-', '-', '-', '-'] )
+        
         self.time_marks.append('  ')
 
     def addBar(self):
