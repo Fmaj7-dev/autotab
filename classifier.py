@@ -39,6 +39,7 @@ class Classifier:
         ])
 
         loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+        #loss_fn = tf.keras.losses.BinaryCrossentropy()
 
         model.compile(optimizer='adam',
               loss=loss_fn,
@@ -93,7 +94,10 @@ class Classifier:
     def classifyNN(self, wavfilename):
         #FIXME: move this to a common audio reader
         rate, data = wavfile.read( wavfilename ) #pylint: disable=unused-variable
-        C = np.abs( librosa.cqt(data[:,0] / float(65535), sr=44100, norm=0, filter_scale=3) )
+
+        if len(data.shape) == 2:
+            data=data[:,0]
+        C = np.abs( librosa.cqt(data / float(65535), sr=44100, norm=0, filter_scale=3) )
 
         # add all samples
         result = np.sum( C, axis=1 )
@@ -178,7 +182,11 @@ class Classifier:
     def classifyET(self, wavfilename):
         #FIXME: move this to a common audio reader
         rate, data = wavfile.read( wavfilename ) #pylint: disable=unused-variable
-        C = np.abs( librosa.cqt(data[:,0] / float(65535), sr=44100, norm=0, filter_scale=3) )
+        
+        if len(data.shape) == 2:
+            data=data[:,0]
+
+        C = np.abs( librosa.cqt(data / float(65535), sr=44100, norm=0, filter_scale=3) )
 
         # add all samples
         result = np.sum( C, axis=1 )

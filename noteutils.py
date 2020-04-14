@@ -1,9 +1,13 @@
 
-class Note:
+class NoteUtils:
+    offsetGuitar = 28
+
     def __init__(self):
+        # guitar note 0 (e2) is actually note 28 in the whole scale
         self.C = "c"
         self.Cs = "cs"
 
+    
 # based on https://pages.mtu.edu/~suits/notefreqs.html
 def printNotes():
     # c0 frequency
